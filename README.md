@@ -1,43 +1,67 @@
-# Mintlify Starter Kit
+# Browseagent Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+This repository contains the documentation for **Browseagent**, a browser automation tool that brings web browsing capabilities directly to AI applications through the Model Context Protocol (MCP). It enables AI assistants like Claude, VSCode to control web browsers, interact with websites, and automate web-based tasks.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+### What is BrowseAgent MCP?
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+BrowseAgent MCP Server acts as a bridge between AI applications and web browsers, allowing AI assistants to:
 
-## Development
+- Navigate to websites and interact with web pages
+- Click buttons, fill forms, and perform user actions
+- Take screenshots and analyze web content
+- Extract information from websites
+- Automate repetitive web tasks
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+The system works through two main components:
+- **MCP Server**: Communicates with AI applications using the Model Context Protocol
+- **Chrome Extension**: Executes browser actions and communicates with the server
+
+
+## How It Works
+
+1. **AI Application** (like Claude) sends commands through MCP protocol
+2. **BrowseAgent Server** receives and processes these commands
+3. **Chrome Extension** executes browser actions
+4. **Results** are sent back to the AI application
 
 ```
-npm i -g mint
+AI App → MCP Protocol → BrowseAgent Server → Chrome Extension → Browser
+                                     ↓
+                              Screenshots & Data ← Browser Actions
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Key Features
 
-```
-mint dev
-```
+- **Full Browser Control**: Navigate, click, type, and interact with any website as if you were using the browser yourself.
+- **Visual Analysis**: Capture screenshots and analyze web pages visually to understand content and layout.
+- **Smart Element Detection**: AI-powered element identification helps reliably interact with web page elements.
+- **Real-time Automation**: Dynamic connection with Chrome extension enables immediate browser control.
 
-View your local preview at `http://localhost:3000`.
 
-## Publishing changes
+### Use Cases
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- **Web Automation**:
+    - Form filling and submission
+    - Data extraction from websites
+    - E-commerce automation
+    - Content management tasks
 
-## Need help?
+- **Testing and QA**:
+    - Automated website testing
+    - User interface validation
+    - Accessibility testing
+    - Performance monitoring
 
-### Troubleshooting
+- **Research and Analysis**:
+    - Competitive analysis
+    - Market research
+    - Content auditing
+    - Website monitoring
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+- **Productivity**:
+    - Bulk operations on web interfaces
+    - Report generation from web data
+    - Social media management
+    - Online booking and scheduling
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)

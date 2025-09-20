@@ -1,0 +1,330 @@
+---
+title: 'Configuration'
+description: 'This page covers advanced configuration options for Browseagent, including environment-specific setups, performance tuning, and custom configurations for different deployment scenarios.'
+icon: 'wrench'
+---
+
+
+
+### Command Line Flags
+
+All available command line options for customizing server behavior:
+
+| Flag | Description | Default | Example |
+|------|-------------|---------|---------|
+| `--debug` | Enable detailed logging | `false` | `--debug` |
+| `--port <number>` | WebSocket port for extension | `8765` | `--port 9000` |
+| `--config <path>` | Configuration file path | None | `--config ./config.json` |
+| `--stdio` | Force STDIO mode | Auto-detected | `--stdio` |
+| `--websocket` | Force WebSocket mode (dev) | `false` | `--websocket` |
+
+
+### Basic Command Line Examples
+
+<CodeGroup>
+
+```json Debug Mode
+{
+  "mcpServers": {
+    "browseagent": {
+      "command": "npx",
+      "args": ["@browseagent/mcp@latest", "--debug"]
+    }
+  }
+}
+```
+
+```json Custom Port
+{
+  "mcpServers": {
+    "browseagent": {
+      "command": "npx", 
+      "args": ["@browseagent/mcp@latest", "--port", "9000"]
+    }
+  }
+}
+```
+
+```json Multiple Options
+{
+  "mcpServers": {
+    "browseagent": {
+      "command": "npx",
+      "args": [
+        "@browseagent/mcp@latest", 
+        "--debug",
+        "--port", "8765"
+      ]
+    }
+  }
+}
+```
+</CodeGroup>
+
+
+### Creating a Configuration File
+
+Create `browseagent.config.json` for advanced settings:
+
+```json
+{
+  "debug": false,
+  "port": 8765,
+  "host": "127.0.0.1",
+  "timeout": 30000,
+  "heartbeatInterval": 30000,
+  "connectionTimeout": 60000,
+  "maxRetries": 3,
+  "toolTimeout": 60000
+}
+```
+
+**Usage:**
+```json
+{
+  "mcpServers": {
+    "browseagent": {
+      "command": "npx",
+      "args": ["@browseagent/mcp@latest", "--config", "./browseagent.config.json"]
+    }
+  }
+}
+```
+
+### Configuration Sections Explained
+
+<CodeGroup>
+
+```json Server Configuration
+{
+  "debug": false,           // Enable debug logging
+  "port": 8765,            // WebSocket port
+  "host": "127.0.0.1",     // Bind host
+  "timeout": 30000         // Request timeout in milliseconds
+}
+```
+
+```json Extension Communication
+{
+  "heartbeatInterval": 30000,  // Heartbeat frequency in ms
+  "connectionTimeout": 60000,  // Connection timeout in ms
+  "maxRetries": 3            // Max reconnection attempts
+}
+```
+
+```json Tool Behavior
+{
+  "toolTimeout": 60000       // Tool execution timeout
+}
+```
+</CodeGroup>
+
+
+### Environment-Specific Configurations
+
+<AccordionGroup>
+  <Accordion title="Development Environment">
+  **Features:**
+  - Detailed debug logging
+  - Extended timeouts
+  - WebSocket mode for extension testing
+
+  ```json
+  {
+    "mcpServers": {
+      "browseagent-dev": {
+        "command": "npx",
+        "args": [
+          "@browseagent/mcp@latest",
+          "--debug",
+          "--websocket",
+          "--config", "./config/development.json"
+        ]
+      }
+    }
+  }
+  ```
+
+  **Development Config File:**
+  ```json
+  {
+    "debug": true,
+    "timeout": 120000,
+    "toolTimeout": 120000
+  }
+  ```
+
+  </Accordion>
+  <Accordion title="Production Environment">
+  **Features:**
+  - Optimized performance
+  - Minimal logging
+  - Error handling focus
+
+  ```json
+  {
+    "mcpServers": {
+      "browseagent-prod": {
+        "command": "npx",
+        "args": [
+          "@browseagent/mcp@latest",
+          "--config", "./config/production.json"
+        ]
+      }
+    }
+  }
+  ```
+
+  **Production Config File:**
+  ```json
+  {
+    "debug": false,
+    "logLevel": "warn",
+    "timeout": 30000,
+    "toolTimeout": 60000
+  }
+  ```
+  </Accordion>
+  <Accordion  title="Testing Environment">
+  **Features:**
+  - WebSocket mode
+  - Extended debugging
+  - Test-specific settings
+
+  ```json
+  {
+    "mcpServers": {
+      "browseagent-test": {
+        "command": "npx",
+        "args": [
+          "@browseagent/mcp@latest",
+          "--websocket",
+          "--debug",
+          "--config", "./config/testing.json"
+        ]
+      }
+    }
+  }
+  ```
+  </Accordion>
+</AccordionGroup>
+
+
+### Multiple Server Instances
+
+<AccordionGroup>
+<Accordion title="Running Multiple Instances">
+  ```json
+  {
+    "mcpServers": {
+      "browseagent-main": {
+        "command": "npx",
+        "args": ["@browseagent/mcp@latest"]
+      },
+      "browseagent-dev": {
+        "command": "npx",
+        "args": [
+          "@browseagent/mcp@latest",
+          "--debug",
+          "--port", "8766"
+        ]
+      },
+      "browseagent-test": {
+        "command": "npx",
+        "args": [
+          "@browseagent/mcp@latest",
+          "--websocket",
+          "--port", "8767"
+        ]
+      }
+    }
+  }
+  ```
+</Accordion>
+<Accordion title="Instance-Specific Configuration">
+Each instance can have different settings:
+
+**Main Instance (Production-like):**
+```json
+{
+  "browseagent-main": {
+    "command": "npx",
+    "args": ["@browseagent/mcp@latest", "--config", "./main.config.json"]
+  }
+}
+```
+
+**Development Instance:**
+```json
+{
+  "browseagent-dev": {
+    "command": "npx",
+    "args": [
+      "@browseagent/mcp@latest",
+      "--debug",
+      "--port", "8766",
+      "--config", "./dev.config.json"
+    ]
+  }
+}
+```
+</Accordion>
+</AccordionGroup>
+
+
+### Performance Tuning
+
+<CodeGroup>
+```json Tool Optimization
+{
+  "toolTimeout": 60000         // Tool execution timeout
+}
+```
+```json Connection Optimization
+{
+  "heartbeatInterval": 30000,    // Heartbeat frequency
+  "connectionTimeout": 60000,    // Connection timeout
+  "maxRetries": 3              // Max reconnection attempts
+}
+```
+</CodeGroup>
+
+
+### Configuration Validation
+
+```bash
+# Test server startup with config
+npx @browseagent/mcp@latest --config ./config.json --debug
+
+```
+
+### Configuration Templates
+
+<CodeGroup>
+```json Minimal Configuration
+{
+  "port": 8765
+}
+```
+```json Host Configuration
+{
+  "host": "127.0.0.1",          // Bind only to localhost
+  "port": 8765,                 // Non-standard port
+}
+```
+```json Full Configuration
+{
+  "debug": false,
+  "port": 8765,
+  "host": "127.0.0.1",
+  "timeout": 30000,
+  "heartbeatInterval": 30000,
+  "connectionTimeout": 60000,
+  "maxRetries": 3,
+  "toolTimeout": 60000
+}
+```
+</CodeGroup>
+
+
+

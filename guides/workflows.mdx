@@ -1,0 +1,806 @@
+---
+title: 'Workflows'
+description: 'This guide covers common browser automation workflows and best practices for combining Browseagent tools effectively.'
+icon: 'play'
+---
+
+Learn proven patterns for form automation, data extraction, multi-page workflows, and error handling.
+
+## Core Workflow Patterns
+
+The foundation of most automation workflows is to navigate, inspect, and interact with web pages. Here are some common patterns:
+
+<CodeGroup>
+  ```json Basic Navigation Pattern
+
+  // 1. Navigate to target page
+  {
+    "name": "browser_navigate",
+    "arguments": {
+      "url": "https://example.com"
+    }
+  }
+
+  // 2. Wait for page load
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 2
+    }
+  }
+
+  // 3. Take screenshot to verify arrival
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  ```
+  ```json Inspection-First Pattern
+
+  // 1. Analyze page structure
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // 2. Visual confirmation
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  // 3. Interact with discovered elements
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Target button from snapshot",
+      "ref": "button#discovered-target"
+    }
+  }
+
+  ```
+</CodeGroup>
+
+
+
+## Form Automation Patterns
+
+Forms are a common web interaction. Here are patterns for filling and submitting forms, including multi-step and dynamic forms.
+
+<CodeGroup>
+  ```json Simple Form Completion
+  // 1. Navigate to form page
+  {
+    "name": "browser_navigate",
+    "arguments": {
+      "url": "https://example.com/contact"
+    }
+  }
+
+  // 2. Understand form structure
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // 3. Fill form fields sequentially
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Name field",
+      "ref": "input[name='name']",
+      "text": "John Doe"
+    }
+  }
+
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Email field",
+      "ref": "input[type='email']",
+      "text": "john@example.com"
+    }
+  }
+
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Message textarea",
+      "ref": "textarea[name='message']",
+      "text": "This is my message content."
+    }
+  }
+
+  // 4. Submit form
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Submit button",
+      "ref": "button[type='submit']"
+    }
+  }
+
+  // 5. Verify submission
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 3
+    }
+  }
+
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+  ```
+  ```json Multi-Step Form with Validation
+
+  // Step 1: Fill first section
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "First name",
+      "ref": "input#firstName",
+      "text": "John"
+    }
+  }
+
+  // Wait for validation
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 1
+    }
+  }
+
+  // Move to next field
+  {
+    "name": "browser_press_key",
+    "arguments": {
+      "key": "Tab"
+    }
+  }
+
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Last name",
+      "ref": "input#lastName",
+      "text": "Doe"
+    }
+  }
+
+  // Continue to next step
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Next step button",
+      "ref": "button.next-step"
+    }
+  }
+
+  // Wait for next page section to load
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 2
+    }
+  }
+
+  // Take new snapshot for updated form
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  ```
+  ```json Form with Dynamic Elements
+
+  // Fill initial form
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Country dropdown",
+      "ref": "select[name='country']",
+      "text": "United States"
+    }
+  }
+
+  // Wait for state dropdown to populate
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 1.5
+    }
+  }
+
+  // Get updated page structure
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // Select from newly available state dropdown
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "State dropdown",
+      "ref": "select[name='state']"
+    }
+  }
+
+  ```
+</CodeGroup>
+
+
+
+
+## Search and Data Extraction Patterns
+
+Searching and extracting structured data from web pages is a common task. Here are patterns for performing searches and capturing results.
+
+<CodeGroup>
+  ```json Search Workflow
+    // 1. Navigate to search page
+    {
+      "name": "browser_navigate",
+      "arguments": {
+        "url": "https://example.com/search"
+      }
+    }
+
+    // 2. Find search interface
+    {
+      "name": "browser_snapshot",
+      "arguments": {}
+    }
+
+    // 3. Enter search query
+    {
+      "name": "browser_type",
+      "arguments": {
+        "element": "Search input box",
+        "ref": "input[name='q']",
+        "text": "browser automation tools",
+        "submit": true
+      }
+    }
+
+    // 4. Wait for results
+    {
+      "name": "browser_wait",
+      "arguments": {
+        "time": 3
+      }
+    }
+
+    // 5. Capture results
+    {
+      "name": "browser_screenshot",
+      "arguments": {
+        "fullPage": true
+      }
+    }
+
+    // 6. Analyze results structure
+    {
+      "name": "browser_snapshot",
+      "arguments": {}
+    }
+  ```
+  ```json Data Extraction Pattern
+  // Navigate to data source
+  {
+    "name": "browser_navigate",
+    "arguments": {
+      "url": "https://example.com/data-table"
+    }
+  }
+
+  // Screenshot for visual context
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  // Get structured data
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // If data spans multiple pages, navigate through pagination
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Next page button",
+      "ref": "button.pagination-next"
+    }
+  }
+
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 2
+    }
+  }
+
+  // Repeat data collection
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  ```
+</CodeGroup>
+
+
+
+## Multi-Page Workflows
+
+Many tasks require navigating through multiple pages. Here are patterns for sequential navigation and tab management.
+
+<CodeGroup>
+  ```json Sequential Page Navigation
+  // Page 1: Login
+  {
+    "name": "browser_navigate",
+    "arguments": {
+      "url": "https://app.example.com/login"
+    }
+  }
+
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Username field",
+      "ref": "input[name='username']",
+      "text": "myusername"
+    }
+  }
+
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Password field",
+      "ref": "input[type='password']",
+      "text": "mypassword"
+    }
+  }
+
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Login button",
+      "ref": "button[type='submit']"
+    }
+  }
+
+  // Wait for login redirect
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 3
+    }
+  }
+
+  // Page 2: Dashboard
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Settings menu",
+      "ref": "nav a[href='/settings']"
+    }
+  }
+
+  // Page 3: Settings
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 2
+    }
+  }
+
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  ```
+  ```json Tab Management Workflow
+    // Open first tab
+    {
+      "name": "browser_navigate",
+      "arguments": {
+        "url": "https://site1.example.com"
+      }
+    }
+
+    // Note: tabId will be returned for reference
+    // Store tabId for later use (in practice, AI tracks this)
+
+    // Open second tab
+    {
+      "name": "browser_navigate",
+      "arguments": {
+        "url": "https://site2.example.com"
+      }
+    }
+
+    // Work in second tab
+    {
+      "name": "browser_screenshot",
+      "arguments": {}
+    }
+
+    // Switch back to first tab using tabId
+    {
+      "name": "browser_navigate",
+      "arguments": {
+        "url": "https://site1.example.com/different-page",
+        "tabId": 123
+      }
+    }
+  ```
+</CodeGroup>
+
+
+
+
+
+## Advanced Interaction Patterns
+
+Some web interactions require more complex sequences. Here are patterns for dropdowns, modals, and file uploads.
+
+<CodeGroup>
+  ```json Dropdown Menu Navigation
+  // Hover to reveal menu
+  {
+    "name": "browser_hover",
+    "arguments": {
+      "element": "Products menu trigger",
+      "ref": "nav .products-dropdown"
+    }
+  }
+
+  // Wait for dropdown animation
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 0.5
+    }
+  }
+
+  // Take snapshot to see revealed menu items
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // Click revealed menu item
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Pricing link in dropdown",
+      "ref": "nav .dropdown-menu a[href='/pricing']"
+    }
+  }
+  ```
+  ```json Modal Dialog Interaction
+  // Trigger modal
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Open modal button",
+      "ref": "button.open-modal"
+    }
+  }
+
+  // Wait for modal to appear
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 0.5
+    }
+  }
+
+  // Screenshot modal
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  // Get modal structure
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // Interact with modal content
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Modal input field",
+      "ref": ".modal input[type='text']",
+      "text": "Modal input content"
+    }
+  }
+
+  // Submit or close modal
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Modal confirm button",
+      "ref": ".modal button.confirm"
+    }
+  }
+  ```
+  ```json File Upload Pattern
+  // Navigate to upload page
+  {
+    "name": "browser_navigate",
+    "arguments": {
+      "url": "https://example.com/upload"
+    }
+  }
+
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // For drag-drop upload (if files are visible in page)
+  {
+    "name": "browser_drag_drop",
+    "arguments": {
+      "sourceElement": "File in file list",
+      "sourceRef": ".file-list .file-item[data-name='document.pdf']",
+      "targetElement": "Upload drop zone",
+      "targetRef": ".upload-dropzone"
+    }
+  }
+
+  // Wait for upload processing
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 5
+    }
+  }
+
+  // Verify upload success
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+  ```
+</CodeGroup>
+
+
+
+
+## Error Handling Patterns
+
+The web is dynamic and unpredictable. Here are patterns for handling errors, retries, and verification.
+
+<CodeGroup>
+  ```json Retry Pattern
+  // Attempt interaction
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Submit button",
+      "ref": "button#submit"
+    }
+  }
+
+  // If error occurs, take new snapshot and retry
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 1
+    }
+  }
+
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+
+  // Retry with updated reference
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Submit button",
+      "ref": "button.submit-btn"
+    }
+  }
+  ```
+  ```json Verification Pattern
+  // Perform action
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Save button",
+      "ref": "button.save"
+    }
+  }
+
+  // Wait and verify result
+  {
+    "name": "browser_wait",
+    "arguments": {
+      "time": 2
+    }
+  }
+
+  // Check for success indicators
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+
+  // Look for error messages or success confirmations
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  ```
+  ```json Debug Pattern
+  // When automation fails, gather diagnostic information
+  {
+    "name": "browser_screenshot",
+    "arguments": {
+      "fullPage": true
+    }
+  }
+
+  {
+    "name": "browser_get_console_logs",
+    "arguments": {}
+  }
+
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  ```
+</CodeGroup>
+
+
+
+
+
+## Workflow Templates
+
+<CodeGroup>
+  ```json Contact Form Template
+  {
+    "name": "browser_navigate",
+    "arguments": {"url": "TARGET_URL"}
+  }
+  {
+    "name": "browser_snapshot", 
+    "arguments": {}
+  }
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Name field",
+      "ref": "REF_FROM_SNAPSHOT",
+      "text": "USER_NAME"
+    }
+  }
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Email field",
+      "ref": "REF_FROM_SNAPSHOT", 
+      "text": "USER_EMAIL"
+    }
+  }
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Message field",
+      "ref": "REF_FROM_SNAPSHOT",
+      "text": "USER_MESSAGE"
+    }
+  }
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Submit button",
+      "ref": "REF_FROM_SNAPSHOT"
+    }
+  }
+  {
+    "name": "browser_wait",
+    "arguments": {"time": 3}
+  }
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+  ```
+  ```json Login Workflow Template
+  {
+    "name": "browser_navigate",
+    "arguments": {"url": "LOGIN_URL"}
+  }
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Username field",
+      "ref": "REF_FROM_SNAPSHOT",
+      "text": "USERNAME"
+    }
+  }
+  {
+    "name": "browser_type",
+    "arguments": {
+      "element": "Password field",
+      "ref": "REF_FROM_SNAPSHOT",
+      "text": "PASSWORD"
+    }
+  }
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Login button", 
+      "ref": "REF_FROM_SNAPSHOT"
+    }
+  }
+  {
+    "name": "browser_wait",
+    "arguments": {"time": 3}
+  }
+  {
+    "name": "browser_screenshot",
+    "arguments": {}
+  }
+  ```
+  ```json Data Collection Template
+  {
+    "name": "browser_navigate",
+    "arguments": {"url": "DATA_SOURCE_URL"}
+  }
+  {
+    "name": "browser_screenshot",
+    "arguments": {"fullPage": true}
+  }
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  // Repeat for pagination if needed
+  {
+    "name": "browser_click",
+    "arguments": {
+      "element": "Next page",
+      "ref": "REF_FROM_SNAPSHOT"
+    }
+  }
+  {
+    "name": "browser_wait",
+    "arguments": {"time": 2}
+  }
+  {
+    "name": "browser_snapshot",
+    "arguments": {}
+  }
+  ```
+</CodeGroup>

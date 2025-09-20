@@ -1,0 +1,50 @@
+---
+title: 'Troubleshooting'
+description: 'Common issues and how to resolve them.'
+icon: 'bug-play'
+---
+
+If you run into any issues while using Browseagent, here are some common problems and their solutions.
+
+
+
+### Server Issues
+
+<Tabs>
+  <Tab title="Server Not Loading">
+    1. Check JSON syntax in configuration file
+    2. Verify Node.js installation: node --version
+    3. Test manual installation: npx @browseagent/mcp@latest --debug
+  </Tab>
+  <Tab title="Configuration File Errors">
+    - Missing commas in JSON
+    - Incorrect file path
+    - File doesn't exist
+  </Tab>
+</Tabs>
+
+
+### Extension Issues
+
+<Tabs>
+  <Tab title="Extension Not Installing">
+    - Check internet connection
+    - Disable other extensions temporarily
+    - Clear Chrome cache and cookies
+    - Try incognito mode
+    - Restart Chrome browser
+  </Tab>
+  <Tab title="Extension Not Appearing">
+    - Check Chrome extensions page: chrome://extensions/
+    - Ensure extension is enabled
+    - Look in extensions overflow menu (puzzle piece icon)
+    - Pin extension to toolbar
+  </Tab>
+  <Tab title="Connection Failing">
+    - Verify MCP server is running
+    - Check server port (default 8765)
+    - Test server manually: `npx @browseagent/mcp@latest --debug`
+    - Check firewall/antivirus blocking connections
+    - Try restarting Chrome
+  </Tab>
+</Tabs>

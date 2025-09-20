@@ -1,0 +1,178 @@
+---
+title: 'Tools Reference'
+description: 'Browseagent provides 12 browser automation tools organized into 4 categories. This page gives you an overview of all available tools and their capabilities.'
+icon: 'puzzle'
+---
+
+you can use Browseagent to give your AI agent superpowers for web browsing and automation. Below is a reference of all available tools, organized by category.
+
+### Tool Categories
+
+<Tabs>
+  <Tab title="Navigation Tools">
+    Control browser navigation and page history.
+
+    | Tool | Purpose | Example Use |
+    |------|---------|-------------|
+    | `browser_navigate` | Navigate to a URL | "Go to github.com" |
+    | `browser_go_back` | Navigate back in history | "Go back to previous page" |
+    | `browser_go_forward` | Navigate forward in history | "Go forward one page" |
+  </Tab>
+  <Tab title="Interaction Tools">
+    Interact with page elements like clicking, typing, and hovering.
+
+    | Tool | Purpose | Example Use |
+    |------|---------|-------------|
+    | `browser_click` | Click elements | "Click the login button" |
+    | `browser_type` | Type text into inputs | "Enter email address" |
+    | `browser_hover` | Hover over elements | "Hover over the menu" |
+    | `browser_drag_drop` | Drag and drop elements | "Drag file to upload area" |
+  </Tab>
+  <Tab title="Inspection Tools">
+    Analyze and capture information from web pages.
+
+    | Tool | Purpose | Example Use |
+    |------|---------|-------------|
+    | `browser_snapshot` | Get page structure | "Show me the page layout" |
+    | `browser_screenshot` | Take page screenshots | "Screenshot this page" |
+    | `browser_get_console_logs` | Get browser console output | "Check for JavaScript errors" |
+  </Tab>
+  <Tab title="Utility Tools">
+    Helper functions for timing and keyboard input.
+
+    | Tool | Purpose | Example Use |
+    |------|---------|-------------|
+    | `browser_wait` | Pause execution | "Wait 3 seconds for loading" |
+    | `browser_press_key` | Press keyboard keys | "Press Enter key" |
+  </Tab>
+</Tabs>
+
+
+
+
+### Core Workflow Pattern
+
+Most browser automation follows this pattern:
+
+1. **Navigate** to the target page
+2. **Snapshot** to understand page structure
+3. **Interact** with specific elements using refs from snapshot
+4. **Screenshot** or capture results
+
+```
+navigate → snapshot → interact → screenshot/results
+```
+
+## Essential Tools for Getting Started
+
+### browser_navigate
+Navigate to any website:
+```json
+{
+  "name": "browser_navigate",
+  "arguments": {
+    "url": "https://example.com"
+  }
+}
+```
+
+### browser_snapshot
+Get page structure and element references:
+```json
+{
+  "name": "browser_snapshot",
+  "arguments": {}
+}
+```
+
+Returns structured HTML with `ref` attributes for targeting elements.
+
+### browser_click
+Click page elements using refs from snapshot:
+```json
+{
+  "name": "browser_click", 
+  "arguments": {
+    "element": "Submit button",
+    "ref": "button#submit-btn"
+  }
+}
+```
+
+### browser_screenshot
+Capture visual results:
+```json
+{
+  "name": "browser_screenshot",
+  "arguments": {
+    "fullPage": true
+  }
+}
+```
+
+## Element Reference System
+
+Browseagent uses a reference system to reliably target page elements:
+
+1. **Take snapshot** to get current page structure
+2. **Find target element** in snapshot output
+3. **Use the ref attribute** for precise targeting
+4. **Provide human description** for context
+
+Example snapshot output:
+```html
+<button id="login-btn" ref="button#login-btn">Login</button>
+<input type="email" ref="input[type='email']" placeholder="Email"/>
+```
+
+Use these refs in interaction tools:
+```json
+{
+  "element": "Login button", 
+  "ref": "button#login-btn"
+}
+```
+
+## Common Usage Patterns
+
+### Form Automation
+1. Navigate to page with form
+2. Snapshot to see form structure
+3. Type into input fields using refs
+4. Click submit button
+5. Screenshot results
+
+### Data Extraction
+1. Navigate to data source page
+2. Screenshot for visual confirmation
+3. Snapshot to get structured data
+4. Extract specific information from snapshot
+
+### Multi-step Workflows
+1. Navigate to starting page
+2. For each step:
+   - Snapshot current state
+   - Interact with elements
+   - Wait if needed for page changes
+3. Screenshot final results
+
+## Error Handling
+
+### Element Not Found
+If an element ref doesn't work:
+1. Take a new snapshot (page may have changed)
+2. Find the updated ref for your target element
+3. Retry the interaction
+
+### Page Loading Issues
+If pages don't load completely:
+1. Use `browser_wait` to allow loading time
+2. Take screenshot to visually verify page state
+3. Retry snapshot once page is fully loaded
+
+### Connection Issues
+If tools return connection errors:
+1. Verify Chrome extension is connected
+2. Check extension popup status
+3. Restart browser or reconnect extension
+
